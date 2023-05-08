@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <title>Quiz App</title>
+
+  <style>
+
+    body {
+
+      font-family: Arial, sans-serif;
+
+    }
+
+  
+
+    .container {
+
+      max-width: 600px;
+
+      margin: 0 auto;
+
+      padding: 20px;
+
+      text-align: center;
+
+    }
+
+  
+
+    h1 {
+
+      color: #333;
+
+    }
+
+  
+
+    .question {
+
+      font-size: 18px;
+
+      margin-bottom: 10px;
+
+    }
+
+  
+
+    .options {
+
+      display: flex;
+
+      justify-content: center;
+
+      margin-bottom: 20px;
+
+    }
+
+  
+
+    .option {
+
+      margin: 0 10px;
+
+    }
+
+  
+
+    button {
+
+      padding: 10px 20px;
+
+      background-color: #333;
+
+      color: #fff;
+
+      border: none;
+
+      cursor: pointer;
+
+    }
+
+  
+
+    .notification {
+
+      position: fixed;
+
+      top: 50%;
+
+      left: 50%;
+
+      transform: translate(-50%, -50%);
+
+      padding: 20px;
+
+      background-color: #333;
+
+      color: #fff;
+
+      font-size: 24px;
+
+      display: none;
+
+    }
+
+    .preview {
+
+      margin-top: 20px;
+
+      font-size: 16px;
+
+      font-weight: bold;
+
+    }
+
+    .correct-answer {
+
+      color: green;
+
+    }
+
+    .wrong-answer {
+
+      color: red;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Quiz App</h1>
+
+    <div class="question"></div>
+
+    <div class="options"></div>
+
+  </div>
+
+  
+
+  <div class="notification" id="scoreNotification"></div>
+
+  
+
+  <script>
+
+    const questions = [
+
+      {
+
+        question: "What is the capital of France?",
+
+        options: ["London", "Paris", "Berlin"],
+
+        answer: 1
+
+      },
+
+      {
+
+        question: "What is the largest planet in our solar system?",
+
+        options: ["Mars", "Saturn", "Jupiter"],
+
+        answer: 2
+
+      },
+
+      {
+
+        question: "Which country is known for its famous tulip fields?",
+
+        options: ["Netherlands", "Italy", "Australia"],
+
+        answer: 0
+
+      },
+
+      {
+
+        question: "Who painted the Mona Lisa?",
+
+        options: ["Pablo Picasso", "Leonardo da Vinci", "Vincent van Gogh"],
+
+        answer: 1
+
+      },
+
+      {
+
+        question: "What is the chemical symbol for gold?",
+
+        options: ["Au", "Ag", "Cu"],
+
+        answer: 0
+
+      },
+
+      {
+
+        question: "Which planet is known as the Red Planet?",
+
+        options: ["Mars", "Venus", "Mercury"],
+
+        answer: 0
+
+      },
+
+      {
+
+        question: "Which animal is known as the 'King of the Jungle'?",
+
+        options: ["Lion", "Tiger", "Leopard"],
+
+        answer: 0
+
+      },
+
+      {
+
+        question: "What is the largest ocean on Earth?",
+
+        options: ["Atlantic Ocean", "Pacific Ocean", "Indian Ocean"],
+
+        answer: 1
+
+      },
+
+      {
+
+        question: "Who wrote the play 'Romeo and Juliet'?",
+
+        options: ["William Shakespeare", "Jane Austen", "Charles Dickens"],
+
+        answer: 0
+
+      },
+
+      {
+
+                question: "What is the tallest mountain in the world?",
+
+        options: ["Mount Everest", "K2", "Kangchenjunga"],
+
+        answer: 0
+
+      }
+
+    ];
+
+    const options = document.querySelectorAll('.option');
+
+    const scoreNotification = document.getElementById('scoreNotification');
+
+    const previewElement = document.createElement('div');
+
+    previewElement.classList.add('preview');
+
+    let score = 0;
+
+    let questionIndex = 0;
+
+    const renderQuestion = () => {
+
+      const currentQuestion = questions[questionIndex];
+
+      const questionElement = document.querySelector('.question');
+
+      const optionsContainer = document.querySelector('.options');
+
+      questionElement.textContent = `Question ${questionIndex + 1}: ${currentQuestion.question}`;
+
+      optionsContainer.innerHTML = '';
+
+      currentQuestion.options.forEach((option, index) => {
+
+        const button = document.createElement('button');
+
+        button.classList.add('option');
+
+        button.textContent = option;
+
+        optionsContainer.appendChild(button);
+
+        button.addEventListener('click', () => {
+
+          options.forEach((option) => {
+
+            option.style.backgroundColor = '';
+
+          });
+
+          button.style.backgroundColor = '#ccc';
+
+          score = index === currentQuestion.answer ? score + 10 : score;
+
+        });
+
+      });
+
+    };
+
+    const showScoreNotification = () => {
+
+      const scorePercentage = (score / 100) * 100;
+
+      scoreNotification.innerText = `Your score: ${scorePercentage}%`;
+
+      scoreNotification.style.display = 'block';
+
+      showPreview();
+
+    };
+
+    const showPreview = () => {
+
+      const previews = [];
+
+      questions.forEach((question, index) => {
+
+        const correctAnswer = question.options[question.answer];
+
+        const userAnswer = options[index]?.style.backgroundColor ? question.options[getIndex(options[index])] : 'Not Answered';
+
+        const preview = document.createElement('div');
+
+        preview.classList.add('preview');
+
+        if (userAnswer === correctAnswer) {
+
+          preview.textContent = `Question ${index + 1}: Correct`;
+
+          preview.classList.add('correct-answer');
+
+        } else {
+
+          preview.textContent = `Question ${index + 1}: Wrong. Correct Answer: ${correctAnswer}`;
+
+          preview.classList.add('wrong-answer');
+
+        }
+
+        previews.push(preview);
+
+      });
+
+      previewElement.innerHTML = '';
+
+      previews.forEach((preview) => {
+
+        previewElement.appendChild(preview);
+
+      });
+
+      document.querySelector('.container').appendChild(previewElement);
+
+    };
+
+    const nextQuestion = () => {
+
+      questionIndex++;
+
+      if (questionIndex < questions.length) {
+
+        renderQuestion();
+
+      } else {
+
+        showScoreNotification();
+
+      }
+
+    };
+
+    const getIndex = (element) => {
+
+      return Array.from(options).indexOf(element);
+
+    };
+
+    renderQuestion();
+
+    const submitButton = document.createElement('button');
+
+    submitButton.textContent = 'Submit';
+
+    submitButton.addEventListener('click', nextQuestion);
+
+    document.querySelector('.container').appendChild(submitButton);
+
+  </script>
+
+</body>
+
+</html>
+
